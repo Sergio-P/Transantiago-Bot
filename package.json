@@ -1,0 +1,13 @@
+{
+  "name": "Transantiago Bot",
+  "version": "1.2.2",
+  "author": "Sergio Peñafiel",
+  "dependencies": {
+    "request": "*",
+    "node-telegram-bot-api": "*"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}
