@@ -9,6 +9,7 @@ let bot = new TelegramBot(token, {polling: true});
 let userData = {};
 
 let sendRequest = (fromId, paradero) => {
+	//Using adderou API
 	let url = "http://dev.adderou.cl/transanpbl/busdata.php?paradero="+paradero;
 
 	request(url, (err,resp,body) => {
