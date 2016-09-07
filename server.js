@@ -2,11 +2,14 @@
 
 let TelegramBot = require('node-telegram-bot-api');
 let request = require("request");
+let fs = require("fs");
 
 let token = require("./pass.js").token;
 let bot = new TelegramBot(token, {polling: true});
 
-let userData = {};
+let userData = JSON.parse(fs.readFileSync("user_data.json"));
+
+const SAVE_USER_DATA = true;
 
 let sendRequest = (fromId, paradero) => {
 	//Using adderou API
@@ -31,13 +34,15 @@ let sendRequest = (fromId, paradero) => {
 
 let saveRecent = (fromid, paradero) => {
 	if(userData[fromid] == null || userData[fromid].recent == null){
-		userData[fromid] = {query: false, recent: []};
+		userData[fromid] = {recent: []};
 	}
 	if(userData[fromid].recent.indexOf(paradero) == -1){
-		if(userData[fromid].recent.length >= 3){
-			userData[fromid].recent.splice(0,1);
-		}
 		userData[fromid].recent.push(paradero);
+		if(SAVE_USER_DATA){
+			fs.writeFile("user_data.json", JSON.stringify(userData), (err) => {
+  				if (err) throw err;
+  			});
+		}
 	}
 };
 
@@ -47,7 +52,20 @@ bot.onText(/\/consulta (.+)/, (msg, match) => {
 	let fromId = msg.from.id;
 	let paradero = match[1];
 	sendRequest(fromId,paradero)
+	//saveRecent(fromId,paradero);
+});
+
+bot.onText(/\/favorito (.+)/, (msg, match) => {
+	let fromId = msg.from.id;
+	let paradero = match[1];
+	//sendRequest(fromId,paradero)
 	saveRecent(fromId,paradero);
+	bot.sendMessage(fromId,"Paradero guardado a favoritos",{
+		"reply_markup": {
+			"keyboard": [userData[fromId].recent],
+			"one_time_keyboard": true
+		}
+	});
 });
 
 
@@ -55,7 +73,6 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 	let fromId = msg.from.id;
 	if(userData[fromId]==null)
 		userData[fromId] = {};
-	userData[fromId].query = true;
 	if(userData[fromId].recent != null && userData[fromId].recent.length > 0){
 		bot.sendMessage(fromId, "Indica el nombre del Paradero",{
 			"reply_markup": {
@@ -72,9 +89,8 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 
 bot.onText(/^P[a-zA-Z][0-9]{3,4}$/, (msg, match) => {
 	var fromId = msg.from.id;
-	if(userData[fromId]!=null && userData[fromId].query){
+	if(userData[fromId]!=null){
 		sendRequest(fromId,match[0]);
-		userData[fromId].query = false;
-		saveRecent(fromId,match[0]);
+		//saveRecent(fromId,match[0]);
 	}
 });
