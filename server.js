@@ -12,8 +12,17 @@ let userData = JSON.parse(fs.readFileSync("user_data.json"));
 const SAVE_USER_DATA = true;
 
 let sendRequest = (fromId, paradero) => {
+	let servs;
+	if(paradero.indexOf(" ")!=-1){
+		let comps = paradero.split(" ");
+		servs = comps.slice(1);
+		paradero = comps[0];
+	}
+
 	//Using adderou API
 	let url = "http://dev.adderou.cl/transanpbl/busdata.php?paradero="+paradero;
+	if(servs != null && servs.length > 0)
+		url += "&servicios="+servs.join(",");
 
 	request(url, (err,resp,body) => {
 		let data = JSON.parse(body);
@@ -51,7 +60,7 @@ let saveRecent = (fromid, paradero) => {
 bot.onText(/\/consulta (.+)/, (msg, match) => {
 	let fromId = msg.from.id;
 	let paradero = match[1];
-	sendRequest(fromId,paradero)
+	sendRequest(fromId,paradero);
 	//saveRecent(fromId,paradero);
 });
 
