@@ -56,6 +56,21 @@ let saveRecent = (fromid, paradero) => {
 };
 
 
+let removeRecent = (fromid, paradero) => {
+	if(userData[fromid] == null || userData[fromid].recent == null){
+		return;
+	}
+	let ind = userData[fromid].recent.indexOf(paradero);
+	if(ind != -1){
+		userData[fromid].recent.splice(ind,1);
+		if(SAVE_USER_DATA){
+			fs.writeFile("user_data.json", JSON.stringify(userData), (err) => {
+  				if (err) throw err;
+  			});
+		}
+	}
+};
+
 
 bot.onText(/\/consulta (.+)/, (msg, match) => {
 	let fromId = msg.from.id;
@@ -77,6 +92,14 @@ bot.onText(/\/favorito (.+)/, (msg, match) => {
 	});
 });
 
+bot.onText(/\/borrarfavorito (.+)/, (msg, match) => {
+	let fromId = msg.from.id;
+	let paradero = match[1];
+	//sendRequest(fromId,paradero)
+	removeRecent(fromId,paradero);
+	bot.sendMessage(fromId,"Paradero removido de favoritos, actualiza tu teclado usando /consulta o cuando agregues un nuevo favorito");
+});
+
 
 bot.onText(/^\/consulta$/, (msg, match) => {
 	let fromId = msg.from.id;
@@ -96,7 +119,7 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 	}
 });
 
-bot.onText(/^P[a-zA-Z][0-9]{3,4}$/, (msg, match) => {
+bot.onText(/^[P,p][a-zA-Z][0-9]{3,4}$/, (msg, match) => {
 	var fromId = msg.from.id;
 	if(userData[fromId]!=null){
 		sendRequest(fromId,match[0]);
