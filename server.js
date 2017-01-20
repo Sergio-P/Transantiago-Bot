@@ -102,7 +102,7 @@ bot.onText(/\/favorito (.+)/, (msg, match) => {
 	saveRecent(fromId,paradero);
 	bot.sendMessage(fromId,"Paradero guardado a favoritos",{
 		"reply_markup": {
-			"keyboard": getKeyboard(),
+			"keyboard": getKeyboard(fromId),
 			"one_time_keyboard": true
 		}
 	});
@@ -124,7 +124,7 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 	if(userData[fromId].recent != null && userData[fromId].recent.length > 0){
 		bot.sendMessage(fromId, "Indica el nombre del Paradero",{
 			"reply_markup": {
-				"keyboard": getKeyboard(),
+				"keyboard": getKeyboard(fromId),
 				"one_time_keyboard": true
 			}
 		});
@@ -135,7 +135,7 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 	}
 });
 
-bot.onText(/^[P,p][a-zA-Z][0-9]{3,4}$/, (msg, match) => {
+bot.onText(/^[P,p][a-zA-Z][0-9]{2,4}$/, (msg, match) => {
 	var fromId = msg.from.id;
 	if(userData[fromId]!=null){
 		sendRequest(fromId,match[0]);
