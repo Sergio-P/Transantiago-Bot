@@ -71,6 +71,22 @@ let removeRecent = (fromid, paradero) => {
 	}
 };
 
+let getKeyboard = (fromId) => {
+	let favs = userData[fromId].recent;
+	let rows = ~~(Math.sqrt(favs.length));
+	let cols = favs.length / rows;
+	let keyboard = [];
+	let k = 0;
+	for(var j = 0; j < rows; j++){
+		keyboard.push([]);
+		for(i = 0; i < cols; i++){
+			if(k >= favs.length) break;
+			keyboard[j].push(favs[k]);
+			k++;
+		}
+	}
+	return keyboard;
+};
 
 bot.onText(/\/consulta (.+)/, (msg, match) => {
 	let fromId = msg.from.id;
@@ -86,7 +102,7 @@ bot.onText(/\/favorito (.+)/, (msg, match) => {
 	saveRecent(fromId,paradero);
 	bot.sendMessage(fromId,"Paradero guardado a favoritos",{
 		"reply_markup": {
-			"keyboard": [userData[fromId].recent],
+			"keyboard": getKeyboard(),
 			"one_time_keyboard": true
 		}
 	});
@@ -108,7 +124,7 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 	if(userData[fromId].recent != null && userData[fromId].recent.length > 0){
 		bot.sendMessage(fromId, "Indica el nombre del Paradero",{
 			"reply_markup": {
-				"keyboard": [userData[fromId].recent],
+				"keyboard": getKeyboard(),
 				"one_time_keyboard": true
 			}
 		});
