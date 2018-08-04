@@ -25,19 +25,24 @@ let sendRequest = (fromId, paradero) => {
 		url += "&servicios="+servs.join(",");
 
 	request(url, (err,resp,body) => {
-		let data = JSON.parse(body);
-		var builder = "Consulta Paradero: "+paradero+" 🚌\n";
-		if(data.servicios.length == 0){
-			builder += "Sin información";
-		}
-		else{
-			let serv = data.servicios;
-			for(var i=0; i<serv.length; i++){
-				if(serv[i].tiempo!=null)
-					builder += "*"+serv[i].servicio+"* - "+serv[i].tiempo+" ("+serv[i].distancia.substring(0,serv[i].distancia.length-5)+"m)"+"\n";
+		try{
+			let data = JSON.parse(body);
+			var builder = "Consulta Paradero: "+paradero+" 🚌\n";
+			if(data.servicios.length == 0){
+				builder += "Sin información";
 			}
+			else{
+				let serv = data.servicios;
+				for(var i=0; i<serv.length; i++){
+					if(serv[i].tiempo!=null)
+						builder += "*"+serv[i].servicio+"* - "+serv[i].tiempo+" ("+serv[i].distancia.substring(0,serv[i].distancia.length-5)+"m)"+"\n";
+				}
+			}
+			bot.sendMessage(fromId, builder, {parse_mode: "Markdown"});
 		}
-		bot.sendMessage(fromId, builder, {parse_mode: "Markdown"});
+		catch(err) {
+			bot.sendMessage(fromId, "Error al cargar datos de Transantiago 💤");
+		}
 	});
 };
 
