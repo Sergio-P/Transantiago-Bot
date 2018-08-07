@@ -27,7 +27,7 @@ let sendRequest = (fromId, paradero) => {
 	request(url, (err,resp,body) => {
 		try{
 			let data = JSON.parse(body);
-			var builder = "Consulta Paradero: "+paradero+" 🚌\n";
+			var builder = "Consulta Paradero: /" + paradero.toUpperCase() + " 🚌\n";
 			if(data.servicios.length == 0){
 				builder += "Sin información";
 			}
@@ -140,7 +140,7 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 	}
 });
 
-bot.onText(/^[P,p][a-zA-Z][0-9]{2,4}$/, (msg, match) => {
+bot.onText(/^\/?[P,p][a-zA-Z][0-9]{2,4}$/, (msg, match) => {
 	var fromId = msg.from.id;
 	if(userData[fromId]!=null){
 		sendRequest(fromId,match[0]);
