@@ -20,7 +20,7 @@ let sendRequest = (fromId, paradero) => {
 	}
 
 	//Using adderou API
-	let url = "http://dev.adderou.cl/transanpbl/busdata.php?paradero="+paradero;
+	let url = "https://api.adderou.cl/ts/?paradero="+paradero;
 	if(servs != null && servs.length > 0)
 		url += "&servicios="+servs.join(",");
 
