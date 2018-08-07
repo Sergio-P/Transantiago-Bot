@@ -143,7 +143,7 @@ bot.onText(/^\/consulta$/, (msg, match) => {
 bot.onText(/^\/?[P,p][a-zA-Z][0-9]{2,4}$/, (msg, match) => {
 	var fromId = msg.from.id;
 	if(userData[fromId]!=null){
-		sendRequest(fromId,match[0]);
+		sendRequest(fromId,match[0].replace("/",""));
 		//saveRecent(fromId,match[0]);
 	}
 });
