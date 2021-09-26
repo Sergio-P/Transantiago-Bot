@@ -35,7 +35,7 @@ let sendRequest = (fromId, paradero) => {
 				let serv = data.servicios;
 				for(var i=0; i<serv.length; i++){
 					if(serv[i].tiempo!=null)
-						builder += "*"+serv[i].servicio+"* - "+serv[i].tiempo+" ("+serv[i].distancia.substring(0,serv[i].distancia.length-5)+"m)"+"\n";
+						builder += "*"+serv[i].servicio+"* - "+serv[i].tiempo+" ("+(serv[i].distancia.match(/\d+/)[0])+"m)"+"\n";
 				}
 			}
 			bot.sendMessage(fromId, builder, {parse_mode: "Markdown"});
