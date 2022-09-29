@@ -19,25 +19,19 @@ let sendRequest = (fromId, paradero) => {
 		paradero = comps[0];
 	}
 
-	//Using adderou API
-	let url = "https://api.adderou.cl/ts/?paradero="+paradero;
-	if(servs != null && servs.length > 0)
-		url += "&servicios="+servs.join(",");
+	let url = "https://api.xor.cl/red/bus-stop/"+paradero;
+	//	if(servs != null && servs.length > 0)
+	//		url += "&servicios="+servs.join(",");
 
 	request(url, (err,resp,body) => {
 		try{
 			let data = JSON.parse(body);
 			var builder = "Consulta Paradero: /" + paradero.toUpperCase() + " 🚌\n";
-			if(data.servicios.length == 0){
-				builder += "Sin información";
-			}
-			else{
-				let serv = data.servicios;
-				for(var i=0; i<serv.length; i++){
-					if(serv[i].tiempo!=null)
-						builder += "*"+serv[i].servicio+"* - "+serv[i].tiempo+" ("+(serv[i].distancia.match(/\d+/)[0])+"m)"+"\n";
-				}
-			}
+			builder += data.services.map(e => e.buses.map(b => ({...b, servicio: e.id})))
+							.flat()
+							.sort((a,b) => a.meters_distance - b.meters_distance)
+							.map(e => `*${e.servicio}:* Entre ${e.min_arrival_time} y ${e.max_arrival_time} mins (${e.meters_distance}m)`)
+							.join("\n");
 			bot.sendMessage(fromId, builder, {parse_mode: "Markdown"});
 		}
 		catch(err) {
